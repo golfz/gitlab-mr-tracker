@@ -5,14 +5,13 @@ import { MRCard } from '../MRCard/MRCard';
 interface MRTableProps {
   title: string;
   mrList: MergeRequest[];
-  onDelete: (id: string) => void;
   onMarkAsRead: (id: string) => void;
   onMarkAsUnread: (id: string) => void;
   hasNewComments: (mr: MergeRequest) => boolean;
   isRead: (id: string) => boolean;
 }
 
-export function MRTable({ title, mrList, onDelete, onMarkAsRead, onMarkAsUnread, hasNewComments, isRead }: MRTableProps) {
+export function MRTable({ title, mrList, onMarkAsRead, onMarkAsUnread, hasNewComments, isRead }: MRTableProps) {
   if (mrList.length === 0) {
     return null;
   }
@@ -51,7 +50,6 @@ export function MRTable({ title, mrList, onDelete, onMarkAsRead, onMarkAsUnread,
                 <MRRow
                   key={mr.id}
                   mr={mr}
-                  onDelete={onDelete}
                   onMarkAsRead={onMarkAsRead}
                   onMarkAsUnread={onMarkAsUnread}
                   hasNewComments={hasNewComments(mr)}
@@ -68,7 +66,6 @@ export function MRTable({ title, mrList, onDelete, onMarkAsRead, onMarkAsUnread,
             <MRCard
               key={mr.id}
               mr={mr}
-              onDelete={onDelete}
               onMarkAsRead={onMarkAsRead}
               onMarkAsUnread={onMarkAsUnread}
               hasNewComments={hasNewComments(mr)}

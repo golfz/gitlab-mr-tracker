@@ -6,20 +6,13 @@ import { formatTimeAgo } from '../../utils/timeFormatter';
 
 interface MRRowProps {
   mr: MergeRequest;
-  onDelete: (id: string) => void;
   onMarkAsRead: (id: string) => void;
   onMarkAsUnread: (id: string) => void;
   hasNewComments: boolean;
   isRead: boolean;
 }
 
-export function MRRow({ mr, onDelete, onMarkAsRead, onMarkAsUnread, hasNewComments, isRead }: MRRowProps) {
-  const handleDelete = () => {
-    if (window.confirm(`Are you sure you want to remove "${mr.title}"?`)) {
-      onDelete(mr.id);
-    }
-  };
-
+export function MRRow({ mr, onMarkAsRead, onMarkAsUnread, hasNewComments, isRead }: MRRowProps) {
   const handleMRClick = () => {
     onMarkAsRead(mr.id);
   };
@@ -107,13 +100,6 @@ export function MRRow({ mr, onDelete, onMarkAsRead, onMarkAsUnread, hasNewCommen
               ✉️
             </button>
           )}
-          <button
-            onClick={handleDelete}
-            className="text-red-600 hover:text-red-800 hover:bg-red-50 px-2 py-1 rounded transition-colors"
-            title="Delete"
-          >
-            🗑️
-          </button>
         </div>
       </td>
     </tr>

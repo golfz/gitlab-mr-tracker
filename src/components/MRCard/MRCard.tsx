@@ -6,20 +6,13 @@ import { formatTimeAgo } from '../../utils/timeFormatter';
 
 interface MRCardProps {
   mr: MergeRequest;
-  onDelete: (id: string) => void;
   onMarkAsRead: (id: string) => void;
   onMarkAsUnread: (id: string) => void;
   hasNewComments: boolean;
   isRead: boolean;
 }
 
-export function MRCard({ mr, onDelete, onMarkAsRead, onMarkAsUnread, hasNewComments, isRead }: MRCardProps) {
-  const handleDelete = () => {
-    if (window.confirm(`Are you sure you want to remove "${mr.title}"?`)) {
-      onDelete(mr.id);
-    }
-  };
-
+export function MRCard({ mr, onMarkAsRead, onMarkAsUnread, hasNewComments, isRead }: MRCardProps) {
   const handleMRClick = () => {
     onMarkAsRead(mr.id);
   };
@@ -64,13 +57,6 @@ export function MRCard({ mr, onDelete, onMarkAsRead, onMarkAsUnread, hasNewComme
               ✉️
             </button>
           )}
-          <button
-            onClick={handleDelete}
-            className="text-red-600 hover:text-red-800 hover:bg-red-50 px-2 py-1 rounded transition-colors flex-shrink-0"
-            title="Delete"
-          >
-            🗑️
-          </button>
         </div>
       </div>
 

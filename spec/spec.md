@@ -238,10 +238,6 @@ enum MRStatus {
   - Only visible when MR has been read (has read timestamp)
   - Removes the read timestamp, marking MR as unread
   - Causes "New" badge to reappear if there are comments
-- **Delete Button**: 
-  - Trash icon or "Delete" button
-  - Confirmation dialog before deletion
-  - Removes MR from LocalStorage and table
 
 #### 5.3.2 Table Behavior
 - **Sorting**: By created time (newer first)

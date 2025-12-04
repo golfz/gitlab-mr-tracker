@@ -19,7 +19,6 @@ function App() {
     error,
     categorizeMRs,
     addMR,
-    removeMR,
     refreshAll,
     subscribeToAccounts,
     updateMRList,
@@ -202,7 +201,6 @@ function App() {
           <MRTable
             title="My MRs"
             mrList={myMRs}
-            onDelete={removeMR}
             onMarkAsRead={markMRAsRead}
             onMarkAsUnread={markMRAsUnread}
             hasNewComments={hasNewComments}
@@ -214,7 +212,6 @@ function App() {
           <MRTable
             title="Team MRs"
             mrList={teamMRs}
-            onDelete={removeMR}
             onMarkAsRead={markMRAsRead}
             onMarkAsUnread={markMRAsUnread}
             hasNewComments={hasNewComments}
@@ -226,7 +223,6 @@ function App() {
           <MRTable
             title="Other MRs"
             mrList={otherMRs}
-            onDelete={removeMR}
             onMarkAsRead={markMRAsRead}
             onMarkAsUnread={markMRAsUnread}
             hasNewComments={hasNewComments}
