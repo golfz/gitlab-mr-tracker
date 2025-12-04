@@ -27,6 +27,7 @@ export function useMRData(config: AppConfig) {
 
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [readTimestamps, setReadTimestamps] = useState<Record<string, string>>(() => storage.getMRReadTimestamps());
 
   // Save to storage whenever MR list or hidden MRs change
   useEffect(() => {
@@ -274,21 +275,26 @@ export function useMRData(config: AppConfig) {
   }, []);
 
   const markMRAsRead = useCallback((mrId: string) => {
-    storage.updateMRReadTimestamp(mrId, new Date().toISOString());
+    const timestamp = new Date().toISOString();
+    storage.updateMRReadTimestamp(mrId, timestamp);
+    // Update state to trigger re-render
+    setReadTimestamps((prev) => ({
+      ...prev,
+      [mrId]: timestamp,
+    }));
   }, []);
 
   const hasNewComments = useCallback((mr: MergeRequest): boolean => {
     if (!mr.latestCommentAt) {
       return false;
     }
-    const readTimestamps = storage.getMRReadTimestamps();
     const lastReadAt = readTimestamps[mr.id];
     if (!lastReadAt) {
       // If never read, consider it as having new comments if there are any comments
       return true;
     }
     return new Date(mr.latestCommentAt) > new Date(lastReadAt);
-  }, []);
+  }, [readTimestamps]);
 
   return {
     mrList,
