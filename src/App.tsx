@@ -25,6 +25,8 @@ function App() {
     refreshAll,
     subscribeToAccounts,
     updateMRList,
+    markMRAsRead,
+    hasNewComments,
     setError,
   } = useMRData(config);
 
@@ -213,6 +215,8 @@ function App() {
             mrList={myMRs}
             onDelete={removeMR}
             onHide={hideMR}
+            onMarkAsRead={markMRAsRead}
+            hasNewComments={hasNewComments}
           />
         )}
 
@@ -222,6 +226,8 @@ function App() {
             mrList={teamMRs}
             onDelete={removeMR}
             onHide={hideMR}
+            onMarkAsRead={markMRAsRead}
+            hasNewComments={hasNewComments}
           />
         )}
 
@@ -231,6 +237,8 @@ function App() {
             mrList={otherMRs}
             onDelete={removeMR}
             onHide={hideMR}
+            onMarkAsRead={markMRAsRead}
+            hasNewComments={hasNewComments}
           />
         )}
 

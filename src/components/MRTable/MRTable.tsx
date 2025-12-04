@@ -7,9 +7,11 @@ interface MRTableProps {
   mrList: MergeRequest[];
   onDelete: (id: string) => void;
   onHide: (id: string) => void;
+  onMarkAsRead: (id: string) => void;
+  hasNewComments: (mr: MergeRequest) => boolean;
 }
 
-export function MRTable({ title, mrList, onDelete, onHide }: MRTableProps) {
+export function MRTable({ title, mrList, onDelete, onHide, onMarkAsRead, hasNewComments }: MRTableProps) {
   if (mrList.length === 0) {
     return null;
   }
@@ -45,7 +47,14 @@ export function MRTable({ title, mrList, onDelete, onHide }: MRTableProps) {
             </thead>
             <tbody>
               {mrList.map((mr) => (
-                <MRRow key={mr.id} mr={mr} onDelete={onDelete} onHide={onHide} />
+                <MRRow
+                  key={mr.id}
+                  mr={mr}
+                  onDelete={onDelete}
+                  onHide={onHide}
+                  onMarkAsRead={onMarkAsRead}
+                  hasNewComments={hasNewComments(mr)}
+                />
               ))}
             </tbody>
           </table>
@@ -54,7 +63,14 @@ export function MRTable({ title, mrList, onDelete, onHide }: MRTableProps) {
         {/* Mobile Card View */}
         <div className="md:hidden space-y-4">
           {mrList.map((mr) => (
-            <MRCard key={mr.id} mr={mr} onDelete={onDelete} onHide={onHide} />
+            <MRCard
+              key={mr.id}
+              mr={mr}
+              onDelete={onDelete}
+              onHide={onHide}
+              onMarkAsRead={onMarkAsRead}
+              hasNewComments={hasNewComments(mr)}
+            />
           ))}
         </div>
       </div>

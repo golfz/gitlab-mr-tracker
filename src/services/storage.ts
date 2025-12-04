@@ -5,6 +5,7 @@ const MR_LIST_KEY = 'gitlab_mr_list';
 const LAST_UPDATED_KEY = 'gitlab_mr_last_updated';
 const HIDDEN_MRS_KEY = 'gitlab_mr_hidden';
 const STATUS_FILTERS_KEY = 'gitlab_mr_status_filters';
+const MR_READ_TIMESTAMPS_KEY = 'gitlab_mr_read_timestamps';
 
 export const storage = {
   getConfig(): AppConfig | null {
@@ -101,6 +102,34 @@ export const storage = {
       localStorage.setItem(STATUS_FILTERS_KEY, JSON.stringify(filters));
     } catch (error) {
       console.error('Failed to save status filters:', error);
+    }
+  },
+
+  getMRReadTimestamps(): Record<string, string> {
+    try {
+      const item = localStorage.getItem(MR_READ_TIMESTAMPS_KEY);
+      if (!item) return {};
+      return JSON.parse(item) as Record<string, string>;
+    } catch {
+      return {};
+    }
+  },
+
+  saveMRReadTimestamps(timestamps: Record<string, string>): void {
+    try {
+      localStorage.setItem(MR_READ_TIMESTAMPS_KEY, JSON.stringify(timestamps));
+    } catch (error) {
+      console.error('Failed to save MR read timestamps:', error);
+    }
+  },
+
+  updateMRReadTimestamp(mrId: string, timestamp: string): void {
+    try {
+      const timestamps = this.getMRReadTimestamps();
+      timestamps[mrId] = timestamp;
+      this.saveMRReadTimestamps(timestamps);
+    } catch (error) {
+      console.error('Failed to update MR read timestamp:', error);
     }
   },
 };

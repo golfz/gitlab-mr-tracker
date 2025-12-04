@@ -41,6 +41,9 @@ A single-page web application for tracking the latest status of GitLab merge req
   - Array of MR IDs that are hidden
 - **Status Filters**: Stored in LocalStorage
   - Object with status visibility flags
+- **MR Read Timestamps**: Stored in LocalStorage
+  - Object mapping MR ID to last read timestamp
+  - Used to detect new comments since last read
 
 ## 4. Data Models
 
@@ -74,6 +77,7 @@ interface MergeRequest {
   approvers: Approver[];     // List of approvers
   lastFetchedAt: string;     // ISO timestamp of last API fetch
   createdAt: string;         // ISO timestamp when MR was added
+  latestCommentAt?: string;  // ISO timestamp of the latest comment/note
 }
 
 interface Author {
@@ -182,6 +186,7 @@ enum MRStatus {
 - **Top Row**: 
   - MR title (clickable link, opens in new tab)
   - Styled as link/button
+  - When clicked: Updates "last read" timestamp for that MR (stored in LocalStorage)
 - **Bottom Row**: 
   - Repository name
   - MR ID (IID)
@@ -195,6 +200,12 @@ enum MRStatus {
     - ⛔ Rejected
     - 🎉 Merged
   - Time ago (when status was last updated)
+  - **New Comments Indicator**: 
+    - Small blue dot/badge appears when there are new comments since last read
+    - Shown as a small circular badge (🔵) next to the status emoji
+    - Only visible when latest comment timestamp is after the last read timestamp
+    - Clicking on the MR title updates the last read timestamp
+    - "New" text badge also appears next to the status label
 - **Tooltip**: Full status text on hover
 
 **Author Column**

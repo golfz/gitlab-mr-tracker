@@ -8,9 +8,11 @@ interface MRRowProps {
   mr: MergeRequest;
   onDelete: (id: string) => void;
   onHide: (id: string) => void;
+  onMarkAsRead: (id: string) => void;
+  hasNewComments: boolean;
 }
 
-export function MRRow({ mr, onDelete, onHide }: MRRowProps) {
+export function MRRow({ mr, onDelete, onHide, onMarkAsRead, hasNewComments }: MRRowProps) {
   const handleDelete = () => {
     if (window.confirm(`Are you sure you want to remove "${mr.title}"?`)) {
       onDelete(mr.id);
@@ -21,19 +23,33 @@ export function MRRow({ mr, onDelete, onHide }: MRRowProps) {
     onHide(mr.id);
   };
 
+  const handleMRClick = () => {
+    onMarkAsRead(mr.id);
+  };
+
   return (
     <tr className="border-b border-gray-200 hover:bg-gray-50 transition-colors">
       {/* Merge Request Column */}
       <td className="px-4 py-3">
         <div className="flex flex-col gap-1">
-          <a
-            href={mr.url}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="text-blue-600 hover:text-blue-800 hover:underline font-medium"
-          >
-            {mr.title}
-          </a>
+          <div className="flex items-center gap-2">
+            <a
+              href={mr.url}
+              target="_blank"
+              rel="noopener noreferrer"
+              onClick={handleMRClick}
+              className={`text-blue-600 hover:text-blue-800 hover:underline font-medium ${
+                hasNewComments ? 'font-semibold' : ''
+              }`}
+            >
+              {mr.title}
+            </a>
+            {hasNewComments && (
+              <span className="text-xs bg-blue-100 text-blue-700 px-2 py-0.5 rounded-full font-medium">
+                New
+              </span>
+            )}
+          </div>
           <div className="text-sm text-gray-500 flex items-center gap-2 flex-wrap">
             <span>{mr.repository}</span>
             <span>•</span>
@@ -46,7 +62,7 @@ export function MRRow({ mr, onDelete, onHide }: MRRowProps) {
 
       {/* Status Column */}
       <td className="px-4 py-3">
-        <StatusBadge status={mr.status} updatedAt={mr.statusUpdatedAt} />
+        <StatusBadge status={mr.status} updatedAt={mr.statusUpdatedAt} hasNewComments={hasNewComments} />
       </td>
 
       {/* Author Column */}

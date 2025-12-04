@@ -121,6 +121,12 @@ export async function fetchMergeRequest(
     avatarUrl: mrData.author.avatar_url || '',
   };
 
+  // Get latest comment timestamp (non-system comments)
+  const latestComment = notes
+    .filter((note) => !note.system)
+    .sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime())[0];
+  const latestCommentAt = latestComment?.created_at;
+
   // Determine status updated time based on status
   let statusUpdatedAt: string;
   
@@ -151,6 +157,7 @@ export async function fetchMergeRequest(
     approvers,
     lastFetchedAt: new Date().toISOString(),
     createdAt: mrData.created_at,
+    latestCommentAt,
   };
 
   return mr;

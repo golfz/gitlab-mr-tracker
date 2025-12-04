@@ -40,6 +40,7 @@ export interface MergeRequest {
   approvers: Approver[];
   lastFetchedAt: string;
   createdAt: string;
+  latestCommentAt?: string;
 }
 
 export interface AppConfig {

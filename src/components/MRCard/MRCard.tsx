@@ -8,9 +8,11 @@ interface MRCardProps {
   mr: MergeRequest;
   onDelete: (id: string) => void;
   onHide: (id: string) => void;
+  onMarkAsRead: (id: string) => void;
+  hasNewComments: boolean;
 }
 
-export function MRCard({ mr, onDelete, onHide }: MRCardProps) {
+export function MRCard({ mr, onDelete, onHide, onMarkAsRead, hasNewComments }: MRCardProps) {
   const handleDelete = () => {
     if (window.confirm(`Are you sure you want to remove "${mr.title}"?`)) {
       onDelete(mr.id);
@@ -21,18 +23,34 @@ export function MRCard({ mr, onDelete, onHide }: MRCardProps) {
     onHide(mr.id);
   };
 
+  const handleMRClick = () => {
+    onMarkAsRead(mr.id);
+  };
+
   return (
     <div className="bg-white border border-gray-200 rounded-lg p-4 shadow-sm">
       {/* Header */}
       <div className="flex justify-between items-start mb-3">
-        <a
-          href={mr.url}
-          target="_blank"
-          rel="noopener noreferrer"
-          className="text-blue-600 hover:text-blue-800 hover:underline font-medium flex-1 mr-2"
-        >
-          {mr.title}
-        </a>
+        <div className="flex-1 mr-2">
+          <div className="flex items-center gap-2 flex-wrap">
+            <a
+              href={mr.url}
+              target="_blank"
+              rel="noopener noreferrer"
+              onClick={handleMRClick}
+              className={`text-blue-600 hover:text-blue-800 hover:underline font-medium ${
+                hasNewComments ? 'font-semibold' : ''
+              }`}
+            >
+              {mr.title}
+            </a>
+            {hasNewComments && (
+              <span className="text-xs bg-blue-100 text-blue-700 px-2 py-0.5 rounded-full font-medium">
+                New
+              </span>
+            )}
+          </div>
+        </div>
         <div className="flex gap-2">
           <button
             onClick={handleHide}
@@ -62,7 +80,7 @@ export function MRCard({ mr, onDelete, onHide }: MRCardProps) {
 
       {/* Status */}
       <div className="mb-3">
-        <StatusBadge status={mr.status} updatedAt={mr.statusUpdatedAt} />
+        <StatusBadge status={mr.status} updatedAt={mr.statusUpdatedAt} hasNewComments={hasNewComments} />
       </div>
 
       {/* Author, Reviewers and Approvers */}

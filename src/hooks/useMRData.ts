@@ -273,6 +273,23 @@ export function useMRData(config: AppConfig) {
     storage.saveLastUpdated(new Date().toISOString());
   }, []);
 
+  const markMRAsRead = useCallback((mrId: string) => {
+    storage.updateMRReadTimestamp(mrId, new Date().toISOString());
+  }, []);
+
+  const hasNewComments = useCallback((mr: MergeRequest): boolean => {
+    if (!mr.latestCommentAt) {
+      return false;
+    }
+    const readTimestamps = storage.getMRReadTimestamps();
+    const lastReadAt = readTimestamps[mr.id];
+    if (!lastReadAt) {
+      // If never read, consider it as having new comments if there are any comments
+      return true;
+    }
+    return new Date(mr.latestCommentAt) > new Date(lastReadAt);
+  }, []);
+
   return {
     mrList,
     hiddenMRs,
@@ -288,6 +305,8 @@ export function useMRData(config: AppConfig) {
     refreshAll,
     subscribeToAccounts,
     updateMRList,
+    markMRAsRead,
+    hasNewComments,
     setError,
   };
 }
