@@ -17,10 +17,6 @@ export function useMRData(config: AppConfig) {
     return storage.getMRList();
   });
 
-  const [hiddenMRs, setHiddenMRs] = useState<string[]>(() => {
-    return storage.getHiddenMRs();
-  });
-
   const [lastUpdated, setLastUpdated] = useState<string | null>(() => {
     return storage.getLastUpdated();
   });
@@ -29,14 +25,10 @@ export function useMRData(config: AppConfig) {
   const [error, setError] = useState<string | null>(null);
   const [readTimestamps, setReadTimestamps] = useState<Record<string, string>>(() => storage.getMRReadTimestamps());
 
-  // Save to storage whenever MR list or hidden MRs change
+  // Save to storage whenever MR list changes
   useEffect(() => {
     storage.saveMRList(mrList);
   }, [mrList]);
-
-  useEffect(() => {
-    storage.saveHiddenMRs(hiddenMRs);
-  }, [hiddenMRs]);
 
   // Helper to normalize username (remove @ if present, lowercase)
   const normalizeUsername = (username: string): string => {
@@ -125,18 +117,6 @@ export function useMRData(config: AppConfig) {
 
   const removeMR = useCallback((id: string) => {
     setMRList((prev) => prev.filter((mr) => mr.id !== id));
-    // Also remove from hidden list if present
-    setHiddenMRs((prev) => prev.filter((hiddenId) => hiddenId !== id));
-  }, []);
-
-  const hideMR = useCallback((id: string) => {
-    if (!hiddenMRs.includes(id)) {
-      setHiddenMRs((prev) => [...prev, id]);
-    }
-  }, [hiddenMRs]);
-
-  const unhideMR = useCallback((id: string) => {
-    setHiddenMRs((prev) => prev.filter((hiddenId) => hiddenId !== id));
   }, []);
 
   const refreshMR = useCallback(async (mr: MergeRequest) => {
@@ -284,6 +264,19 @@ export function useMRData(config: AppConfig) {
     }));
   }, []);
 
+  const markMRAsUnread = useCallback((mrId: string) => {
+    // Remove read timestamp from storage
+    const timestamps = storage.getMRReadTimestamps();
+    delete timestamps[mrId];
+    storage.saveMRReadTimestamps(timestamps);
+    // Update state to trigger re-render
+    setReadTimestamps((prev) => {
+      const updated = { ...prev };
+      delete updated[mrId];
+      return updated;
+    });
+  }, []);
+
   const hasNewComments = useCallback((mr: MergeRequest): boolean => {
     if (!mr.latestCommentAt) {
       return false;
@@ -296,23 +289,26 @@ export function useMRData(config: AppConfig) {
     return new Date(mr.latestCommentAt) > new Date(lastReadAt);
   }, [readTimestamps]);
 
+  const isRead = useCallback((mrId: string): boolean => {
+    return !!readTimestamps[mrId];
+  }, [readTimestamps]);
+
   return {
     mrList,
-    hiddenMRs,
     lastUpdated,
     loading,
     error,
     categorizeMRs,
     addMR,
     removeMR,
-    hideMR,
-    unhideMR,
     refreshMR,
     refreshAll,
     subscribeToAccounts,
     updateMRList,
     markMRAsRead,
+    markMRAsUnread,
     hasNewComments,
+    isRead,
     setError,
   };
 }

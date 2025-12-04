@@ -8,6 +8,11 @@ interface StatusBadgeProps {
 }
 
 const statusConfig = {
+  [MRStatus.NEW]: {
+    emoji: '✨',
+    label: 'New',
+    className: 'text-yellow-600',
+  },
   [MRStatus.COMMENTED]: {
     emoji: '💬',
     label: 'Commented',

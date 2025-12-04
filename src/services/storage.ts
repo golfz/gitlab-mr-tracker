@@ -3,7 +3,6 @@ import { AppConfig, MergeRequest, MRStatus } from '../types';
 const CONFIG_KEY = 'gitlab_mr_config';
 const MR_LIST_KEY = 'gitlab_mr_list';
 const LAST_UPDATED_KEY = 'gitlab_mr_last_updated';
-const HIDDEN_MRS_KEY = 'gitlab_mr_hidden';
 const STATUS_FILTERS_KEY = 'gitlab_mr_status_filters';
 const MR_READ_TIMESTAMPS_KEY = 'gitlab_mr_read_timestamps';
 
@@ -56,39 +55,32 @@ export const storage = {
     }
   },
 
-  getHiddenMRs(): string[] {
-    try {
-      const item = localStorage.getItem(HIDDEN_MRS_KEY);
-      if (!item) return [];
-      return JSON.parse(item) as string[];
-    } catch {
-      return [];
-    }
-  },
-
-  saveHiddenMRs(hiddenIds: string[]): void {
-    try {
-      localStorage.setItem(HIDDEN_MRS_KEY, JSON.stringify(hiddenIds));
-    } catch (error) {
-      console.error('Failed to save hidden MRs:', error);
-    }
-  },
-
   getStatusFilters(): Record<MRStatus, boolean> {
     try {
       const item = localStorage.getItem(STATUS_FILTERS_KEY);
       if (!item) {
         // Default: all statuses visible
         return {
+          [MRStatus.NEW]: true,
           [MRStatus.COMMENTED]: true,
           [MRStatus.APPROVED]: true,
           [MRStatus.REJECTED]: true,
           [MRStatus.MERGED]: true,
         };
       }
-      return JSON.parse(item) as Record<MRStatus, boolean>;
+      const filters = JSON.parse(item) as Partial<Record<MRStatus, boolean>>;
+      // Ensure all statuses exist (for backward compatibility)
+      // NEW status is always checked by default
+      return {
+        [MRStatus.NEW]: true, // Always default to checked
+        [MRStatus.COMMENTED]: filters[MRStatus.COMMENTED] ?? true,
+        [MRStatus.APPROVED]: filters[MRStatus.APPROVED] ?? true,
+        [MRStatus.REJECTED]: filters[MRStatus.REJECTED] ?? true,
+        [MRStatus.MERGED]: filters[MRStatus.MERGED] ?? true,
+      };
     } catch {
       return {
+        [MRStatus.NEW]: true,
         [MRStatus.COMMENTED]: true,
         [MRStatus.APPROVED]: true,
         [MRStatus.REJECTED]: true,

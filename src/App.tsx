@@ -14,24 +14,23 @@ function App() {
   const { config, saveConfig } = useConfig();
   const {
     mrList,
-    hiddenMRs,
     lastUpdated,
     loading,
     error,
     categorizeMRs,
     addMR,
     removeMR,
-    hideMR,
     refreshAll,
     subscribeToAccounts,
     updateMRList,
     markMRAsRead,
+    markMRAsUnread,
     hasNewComments,
+    isRead,
     setError,
   } = useMRData(config);
 
   const [isConfigOpen, setIsConfigOpen] = useState(false);
-  const [showHidden, setShowHidden] = useState(false);
   const [statusFilters, setStatusFilters] = useState<Record<MRStatus, boolean>>(() => {
     const filters = storage.getStatusFilters();
     // If fetchClosedMRs is disabled, ensure rejected and merged are unchecked
@@ -123,22 +122,14 @@ function App() {
     return mrs.filter((mr) => mr.status !== MRStatus.REJECTED);
   };
 
-  // Filter by hidden status
-  const filterHidden = (mrs: typeof categorized.my) => {
-    if (showHidden) {
-      return mrs;
-    }
-    return mrs.filter((mr) => !hiddenMRs.includes(mr.id));
-  };
-
   // Filter by status
   const filterByStatus = (mrs: typeof categorized.my) => {
     return mrs.filter((mr) => statusFilters[mr.status]);
   };
 
-  const myMRs = filterByStatus(filterHidden(filterByClosedMRs(filterByFetchTime(categorized.my, true), true)));
-  const teamMRs = filterByStatus(filterHidden(filterByClosedMRs(filterByFetchTime(categorized.team, true), true)));
-  const otherMRs = filterByStatus(filterHidden(filterByClosedMRs(filterByFetchTime(categorized.other, false), false)));
+  const myMRs = filterByStatus(filterByClosedMRs(filterByFetchTime(categorized.my, true), true));
+  const teamMRs = filterByStatus(filterByClosedMRs(filterByFetchTime(categorized.team, true), true));
+  const otherMRs = filterByStatus(filterByClosedMRs(filterByFetchTime(categorized.other, false), false));
 
   const handleConfigSave = (newConfig: typeof config) => {
     saveConfig(newConfig);
@@ -201,8 +192,6 @@ function App() {
 
         {/* Filter Controls */}
         <FilterControls
-          showHidden={showHidden}
-          onToggleShowHidden={() => setShowHidden(!showHidden)}
           statusFilters={statusFilters}
           onStatusFilterChange={handleStatusFilterChange}
           fetchClosedMRs={config.fetchClosedMRs}
@@ -214,9 +203,10 @@ function App() {
             title="My MRs"
             mrList={myMRs}
             onDelete={removeMR}
-            onHide={hideMR}
             onMarkAsRead={markMRAsRead}
+            onMarkAsUnread={markMRAsUnread}
             hasNewComments={hasNewComments}
+            isRead={isRead}
           />
         )}
 
@@ -225,9 +215,10 @@ function App() {
             title="Team MRs"
             mrList={teamMRs}
             onDelete={removeMR}
-            onHide={hideMR}
             onMarkAsRead={markMRAsRead}
+            onMarkAsUnread={markMRAsUnread}
             hasNewComments={hasNewComments}
+            isRead={isRead}
           />
         )}
 
@@ -236,9 +227,10 @@ function App() {
             title="Other MRs"
             mrList={otherMRs}
             onDelete={removeMR}
-            onHide={hideMR}
             onMarkAsRead={markMRAsRead}
+            onMarkAsUnread={markMRAsUnread}
             hasNewComments={hasNewComments}
+            isRead={isRead}
           />
         )}
 
@@ -249,7 +241,7 @@ function App() {
             <p className="text-sm mt-2">
               {mrList.length === 0
                 ? 'Configure your accounts in settings or add a custom MR to get started.'
-                : 'All merge requests are hidden or filtered out.'}
+                : 'All merge requests are filtered out.'}
             </p>
           </div>
         )}

@@ -1,14 +1,13 @@
 import { MRStatus } from '../../types';
 
 interface FilterControlsProps {
-  showHidden: boolean;
-  onToggleShowHidden: () => void;
   statusFilters: Record<MRStatus, boolean>;
   onStatusFilterChange: (status: MRStatus, visible: boolean) => void;
   fetchClosedMRs: boolean;
 }
 
 const statusLabels: Record<MRStatus, string> = {
+  [MRStatus.NEW]: '✨ New',
   [MRStatus.COMMENTED]: '💬 Commented',
   [MRStatus.APPROVED]: '✅ Approved',
   [MRStatus.REJECTED]: '⛔ Rejected',
@@ -16,8 +15,6 @@ const statusLabels: Record<MRStatus, string> = {
 };
 
 export function FilterControls({
-  showHidden,
-  onToggleShowHidden,
   statusFilters,
   onStatusFilterChange,
   fetchClosedMRs,
@@ -25,17 +22,6 @@ export function FilterControls({
   return (
     <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-4 mb-4">
       <div className="flex flex-wrap items-center gap-4">
-        <button
-          onClick={onToggleShowHidden}
-          className={`px-4 py-2 rounded-lg transition-colors ${
-            showHidden
-              ? 'bg-gray-200 text-gray-700 hover:bg-gray-300'
-              : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
-          }`}
-        >
-          {showHidden ? '👁️ Hide Hidden' : '👁️‍🗨️ Show Hidden'}
-        </button>
-
         <div className="flex items-center gap-2 flex-wrap">
           <span className="text-sm font-medium text-gray-700">Status:</span>
           {Object.entries(statusLabels).map(([status, label]) => {

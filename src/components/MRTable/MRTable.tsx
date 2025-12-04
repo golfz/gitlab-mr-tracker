@@ -6,12 +6,13 @@ interface MRTableProps {
   title: string;
   mrList: MergeRequest[];
   onDelete: (id: string) => void;
-  onHide: (id: string) => void;
   onMarkAsRead: (id: string) => void;
+  onMarkAsUnread: (id: string) => void;
   hasNewComments: (mr: MergeRequest) => boolean;
+  isRead: (id: string) => boolean;
 }
 
-export function MRTable({ title, mrList, onDelete, onHide, onMarkAsRead, hasNewComments }: MRTableProps) {
+export function MRTable({ title, mrList, onDelete, onMarkAsRead, onMarkAsUnread, hasNewComments, isRead }: MRTableProps) {
   if (mrList.length === 0) {
     return null;
   }
@@ -51,9 +52,10 @@ export function MRTable({ title, mrList, onDelete, onHide, onMarkAsRead, hasNewC
                   key={mr.id}
                   mr={mr}
                   onDelete={onDelete}
-                  onHide={onHide}
                   onMarkAsRead={onMarkAsRead}
+                  onMarkAsUnread={onMarkAsUnread}
                   hasNewComments={hasNewComments(mr)}
+                  isRead={isRead(mr.id)}
                 />
               ))}
             </tbody>
@@ -67,9 +69,10 @@ export function MRTable({ title, mrList, onDelete, onHide, onMarkAsRead, hasNewC
               key={mr.id}
               mr={mr}
               onDelete={onDelete}
-              onHide={onHide}
               onMarkAsRead={onMarkAsRead}
+              onMarkAsUnread={onMarkAsUnread}
               hasNewComments={hasNewComments(mr)}
+              isRead={isRead(mr.id)}
             />
           ))}
         </div>

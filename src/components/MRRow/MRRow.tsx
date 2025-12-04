@@ -7,24 +7,25 @@ import { formatTimeAgo } from '../../utils/timeFormatter';
 interface MRRowProps {
   mr: MergeRequest;
   onDelete: (id: string) => void;
-  onHide: (id: string) => void;
   onMarkAsRead: (id: string) => void;
+  onMarkAsUnread: (id: string) => void;
   hasNewComments: boolean;
+  isRead: boolean;
 }
 
-export function MRRow({ mr, onDelete, onHide, onMarkAsRead, hasNewComments }: MRRowProps) {
+export function MRRow({ mr, onDelete, onMarkAsRead, onMarkAsUnread, hasNewComments, isRead }: MRRowProps) {
   const handleDelete = () => {
     if (window.confirm(`Are you sure you want to remove "${mr.title}"?`)) {
       onDelete(mr.id);
     }
   };
 
-  const handleHide = () => {
-    onHide(mr.id);
-  };
-
   const handleMRClick = () => {
     onMarkAsRead(mr.id);
+  };
+
+  const handleMarkAsUnread = () => {
+    onMarkAsUnread(mr.id);
   };
 
   return (
@@ -38,9 +39,11 @@ export function MRRow({ mr, onDelete, onHide, onMarkAsRead, hasNewComments }: MR
               target="_blank"
               rel="noopener noreferrer"
               onClick={handleMRClick}
-              className={`text-blue-600 hover:text-blue-800 hover:underline font-medium ${
-                hasNewComments ? 'font-semibold' : ''
-              }`}
+              className={`hover:underline ${
+                hasNewComments
+                  ? 'text-blue-700 font-bold'
+                  : 'text-blue-600 font-medium'
+              } hover:text-blue-800`}
             >
               {mr.title}
             </a>
@@ -94,17 +97,19 @@ export function MRRow({ mr, onDelete, onHide, onMarkAsRead, hasNewComments }: MR
 
       {/* Action Column */}
       <td className="px-4 py-3">
-        <div className="flex items-center gap-2">
-          <button
-            onClick={handleHide}
-            className="text-gray-600 hover:text-gray-800 hover:bg-gray-50 px-3 py-1 rounded transition-colors"
-            title="Hide"
-          >
-            👁️‍🗨️
-          </button>
+        <div className="flex items-center gap-1">
+          {isRead && (
+            <button
+              onClick={handleMarkAsUnread}
+              className="text-blue-600 hover:text-blue-800 hover:bg-blue-50 px-2 py-1 rounded transition-colors"
+              title="Mark as Unread"
+            >
+              ✉️
+            </button>
+          )}
           <button
             onClick={handleDelete}
-            className="text-red-600 hover:text-red-800 hover:bg-red-50 px-3 py-1 rounded transition-colors"
+            className="text-red-600 hover:text-red-800 hover:bg-red-50 px-2 py-1 rounded transition-colors"
             title="Delete"
           >
             🗑️

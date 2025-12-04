@@ -37,8 +37,6 @@ A single-page web application for tracking the latest status of GitLab merge req
 - **Merge Requests**: Stored in LocalStorage
   - Array of MR objects with metadata
   - Last updated timestamp
-- **Hidden MRs**: Stored in LocalStorage
-  - Array of MR IDs that are hidden
 - **Status Filters**: Stored in LocalStorage
   - Object with status visibility flags
 - **MR Read Timestamps**: Stored in LocalStorage
@@ -102,6 +100,7 @@ interface Approver {
 }
 
 enum MRStatus {
+  NEW = 'new',                  // ✨ New MR without any comments
   COMMENTED = 'commented',      // 💬 Has comments but not approved
   APPROVED = 'approved',        // ✅ Approved
   REJECTED = 'rejected',        // ⛔ Rejected
@@ -195,6 +194,7 @@ enum MRStatus {
 **Status Column**
 - **Display**: 
   - Emoji indicator:
+    - ✨ New (no comments yet)
     - 💬 Commented (has comments, not approved)
     - ✅ Approved
     - ⛔ Rejected
@@ -233,10 +233,11 @@ enum MRStatus {
   - Click to view profile (optional)
 
 **Action Column**
-- **Hide Button**: 
-  - Eye-slash icon or "Hide" button
-  - Hides MR from view (stored in LocalStorage)
-  - MR remains in storage but is not displayed
+- **Mark as Unread Button**: 
+  - ✉️ (envelope) icon or "Mark as Unread" button
+  - Only visible when MR has been read (has read timestamp)
+  - Removes the read timestamp, marking MR as unread
+  - Causes "New" badge to reappear if there are comments
 - **Delete Button**: 
   - Trash icon or "Delete" button
   - Confirmation dialog before deletion
@@ -250,10 +251,10 @@ enum MRStatus {
   - **Other MRs Table**: Shows manually added MRs that don't match my account or team accounts
   - Tables displayed in order: My MRs → Team MRs → Other MRs
 - **Filter Controls** (above tables):
-  - **Show/Hide Hidden**: Toggle button to show or hide MRs that have been hidden
-  - **Status Checkboxes**: Checkboxes for each status (💬 Commented, ✅ Approved, ⛔ Rejected, 🎉 Merged)
+  - **Status Checkboxes**: Checkboxes for each status (✨ New, 💬 Commented, ✅ Approved, ⛔ Rejected, 🎉 Merged)
     - Unchecked statuses are hidden from all tables
     - State persisted in LocalStorage
+    - **Default State**: All statuses are checked by default, including ✨ New
     - **Dynamic Behavior**:
       - When "Fetch Closed MRs" is disabled: 
         - "Rejected" checkbox is automatically unchecked and disabled (since rejected MRs are not fetched)
@@ -367,6 +368,7 @@ Note:
 2. **Rejected**: `state === 'closed'` and not merged
 3. **Approved**: Has approvals and `state === 'opened'`
 4. **Commented**: Has notes/comments but not approved and `state === 'opened'`
+5. **New**: `state === 'opened'` and no comments/notes and not approved
 
 ### 7.3 Error Handling
 - **401 Unauthorized**: Invalid or expired token

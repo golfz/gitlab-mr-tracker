@@ -85,7 +85,8 @@ export async function fetchMergeRequest(
   } else if (notes && notes.length > 0 && notes.some(note => !note.system)) {
     status = MRStatus.COMMENTED;
   } else {
-    status = MRStatus.COMMENTED;
+    // New MR without any comments
+    status = MRStatus.NEW;
   }
 
   // Extract approvers

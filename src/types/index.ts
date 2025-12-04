@@ -1,4 +1,5 @@
 export enum MRStatus {
+  NEW = 'new',
   COMMENTED = 'commented',
   APPROVED = 'approved',
   REJECTED = 'rejected',
