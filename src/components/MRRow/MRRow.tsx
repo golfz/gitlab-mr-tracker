@@ -3,6 +3,7 @@ import { StatusBadge } from '../StatusBadge/StatusBadge';
 import { AvatarList } from '../AvatarList/AvatarList';
 import { Avatar } from '../Avatar/Avatar';
 import { formatTimeAgo } from '../../utils/timeFormatter';
+import { splitRepositoryPath } from '../../utils/repositoryFormatter';
 
 interface MRRowProps {
   mr: MergeRequest;
@@ -20,6 +21,8 @@ export function MRRow({ mr, onMarkAsRead, onMarkAsUnread, hasNewComments, isRead
   const handleMarkAsUnread = () => {
     onMarkAsUnread(mr.id);
   };
+
+  const repoParts = splitRepositoryPath(mr.repository);
 
   return (
     <tr className="border-b border-gray-200 hover:bg-gray-50 transition-colors">
@@ -47,7 +50,16 @@ export function MRRow({ mr, onMarkAsRead, onMarkAsUnread, hasNewComments, isRead
             )}
           </div>
           <div className="text-sm text-gray-500 flex items-center gap-2 flex-wrap">
-            <span>{mr.repository}</span>
+            {repoParts ? (
+              <span className="flex items-center gap-1">
+                <span>{repoParts.namespace}</span>
+                <span className="inline-flex items-center px-1.5 py-0.5 rounded text-xs font-bold bg-gray-100 text-gray-700 border border-gray-200">
+                  {repoParts.projectName}
+                </span>
+              </span>
+            ) : (
+              <span>{mr.repository}</span>
+            )}
             <span>•</span>
             <span>#{mr.iid}</span>
             <span>•</span>

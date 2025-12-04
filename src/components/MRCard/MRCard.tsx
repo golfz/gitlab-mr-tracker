@@ -3,6 +3,7 @@ import { StatusBadge } from '../StatusBadge/StatusBadge';
 import { AvatarList } from '../AvatarList/AvatarList';
 import { Avatar } from '../Avatar/Avatar';
 import { formatTimeAgo } from '../../utils/timeFormatter';
+import { splitRepositoryPath } from '../../utils/repositoryFormatter';
 
 interface MRCardProps {
   mr: MergeRequest;
@@ -20,6 +21,8 @@ export function MRCard({ mr, onMarkAsRead, onMarkAsUnread, hasNewComments, isRea
   const handleMarkAsUnread = () => {
     onMarkAsUnread(mr.id);
   };
+
+  const repoParts = splitRepositoryPath(mr.repository);
 
   return (
     <div className="bg-white border border-gray-200 rounded-lg p-4 shadow-sm">
@@ -62,7 +65,16 @@ export function MRCard({ mr, onMarkAsRead, onMarkAsUnread, hasNewComments, isRea
 
       {/* Repository Info */}
       <div className="text-sm text-gray-500 mb-3">
-        <span>{mr.repository}</span>
+        {repoParts ? (
+          <span className="flex items-center gap-1">
+            <span>{repoParts.namespace}</span>
+            <span className="inline-flex items-center px-1.5 py-0.5 rounded text-xs font-bold bg-gray-100 text-gray-700 border border-gray-200">
+              {repoParts.projectName}
+            </span>
+          </span>
+        ) : (
+          <span>{mr.repository}</span>
+        )}
         <span className="mx-2">•</span>
         <span>#{mr.iid}</span>
         <span className="mx-2">•</span>

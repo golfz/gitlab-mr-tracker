@@ -187,7 +187,9 @@ enum MRStatus {
   - Styled as link/button
   - When clicked: Updates "last read" timestamp for that MR (stored in LocalStorage)
 - **Bottom Row**: 
-  - Repository name
+  - Repository name (styled with namespace in normal text and project name highlighted/bold)
+    - Example: `regional/platform/` (normal) + `auth-service` (highlighted/bold)
+    - Format: Split repository path by last `/`, display namespace normally and project name with emphasis
   - MR ID (IID)
   - Time ago (relative time, e.g., "2 hours ago")
 
