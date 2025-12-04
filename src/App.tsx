@@ -81,7 +81,7 @@ function App() {
   }, [config.myAccount, config.teamAccounts.join(',')]); // eslint-disable-line react-hooks/exhaustive-deps
 
   // Auto-refresh handler
-  useAutoRefresh(config, mrList, updateMRList);
+  useAutoRefresh(config, mrList, updateMRList, subscribeToAccounts);
 
   // Categorize and filter MRs
   const categorized = categorizeMRs(mrList);
@@ -142,6 +142,11 @@ function App() {
     setStatusFilters((prev) => ({ ...prev, [status]: visible }));
   };
 
+  const handleRefreshClick = () => {
+    refreshAll();
+    subscribeToAccounts();
+  };
+
   return (
     <div className="min-h-screen bg-gray-50">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
@@ -151,8 +156,8 @@ function App() {
             <h1 className="text-3xl font-bold text-gray-900">GitLab MR Tracker</h1>
             <div className="flex items-center gap-4">
               <button
-                onClick={refreshAll}
-                disabled={loading || mrList.length === 0}
+                onClick={handleRefreshClick}
+                disabled={loading}
                 className="px-4 py-2 bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300 disabled:bg-gray-100 disabled:text-gray-400 disabled:cursor-not-allowed transition-colors"
                 title="Refresh all merge requests"
               >

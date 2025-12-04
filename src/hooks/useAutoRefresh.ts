@@ -5,7 +5,8 @@ import { updateMergeRequest } from '../services/gitlabApi';
 export function useAutoRefresh(
   config: AppConfig,
   mrList: MergeRequest[],
-  onUpdate: (updated: MergeRequest[]) => void
+  onUpdate: (updated: MergeRequest[]) => void,
+  onSubscribe?: () => void
 ) {
   const intervalRef = useRef<number | null>(null);
   const isRefreshingRef = useRef(false);
@@ -15,7 +16,7 @@ export function useAutoRefresh(
       return;
     }
 
-    if (!config.accessToken || mrList.length === 0) {
+    if (!config.accessToken) {
       return;
     }
 
@@ -27,18 +28,26 @@ export function useAutoRefresh(
       isRefreshingRef.current = true;
 
       try {
-        const updates = await Promise.allSettled(
-          mrList.map((mr) => updateMergeRequest(config, mr))
-        );
+        // Update existing MRs if we have any
+        if (mrList.length > 0) {
+          const updates = await Promise.allSettled(
+            mrList.map((mr) => updateMergeRequest(config, mr))
+          );
 
-        const updatedList = updates.map((result, index) => {
-          if (result.status === 'fulfilled') {
-            return result.value;
-          }
-          return mrList[index];
-        });
+          const updatedList = updates.map((result, index) => {
+            if (result.status === 'fulfilled') {
+              return result.value;
+            }
+            return mrList[index];
+          });
 
-        onUpdate(updatedList);
+          onUpdate(updatedList);
+        }
+
+        // Fetch new MRs from auto-subscribed accounts
+        if (onSubscribe && (config.myAccount || config.teamAccounts.length > 0)) {
+          onSubscribe();
+        }
       } catch (error) {
         console.error('Auto-refresh failed:', error);
       } finally {
@@ -54,6 +63,6 @@ export function useAutoRefresh(
         clearInterval(intervalRef.current);
       }
     };
-  }, [config.autoRefreshInterval, config.accessToken, mrList, onUpdate]);
+  }, [config.autoRefreshInterval, config.accessToken, config.myAccount, config.teamAccounts, mrList, onUpdate, onSubscribe]);
 }
 
