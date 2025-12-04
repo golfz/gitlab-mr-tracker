@@ -278,14 +278,20 @@ export function useMRData(config: AppConfig) {
   }, []);
 
   const hasNewComments = useCallback((mr: MergeRequest): boolean => {
-    if (!mr.latestCommentAt) {
-      return false;
-    }
     const lastReadAt = readTimestamps[mr.id];
     if (!lastReadAt) {
-      // If never read, consider it as having new comments if there are any comments
+      // If never read, consider it as new/unread
+      // For New status MRs (no comments), they should be considered "new" if never read
+      // For MRs with comments, they should be considered "new" if never read
       return true;
     }
+    // If MR has no comments (New status), it's considered "new" if never read
+    // If it has been read, it's no longer "new" unless there are new comments
+    if (!mr.latestCommentAt) {
+      // New status MR: if it's been read, it's no longer "new"
+      return false;
+    }
+    // MR with comments: check if latest comment is after last read
     return new Date(mr.latestCommentAt) > new Date(lastReadAt);
   }, [readTimestamps]);
 
