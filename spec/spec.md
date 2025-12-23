@@ -39,6 +39,8 @@ A single-page web application for tracking the latest status of GitLab merge req
   - Last updated timestamp
 - **Status Filters**: Stored in LocalStorage
   - Object with status visibility flags
+- **Draft Filter**: Stored in LocalStorage
+  - Boolean flag indicating whether to show draft MRs (default: true)
 - **MR Read Timestamps**: Stored in LocalStorage
   - Object mapping MR ID to last read timestamp
   - Used to detect new comments since last read
@@ -249,15 +251,22 @@ enum MRStatus {
   - **Other MRs Table**: Shows manually added MRs that don't match my account or team accounts
   - Tables displayed in order: My MRs → Team MRs → Other MRs
 - **Filter Controls** (above tables):
-  - **Status Checkboxes**: Checkboxes for each status (✨ New, 💬 Commented, ✅ Approved, ⛔ Rejected, 🎉 Merged)
+  - **Status Checkboxes**: Checkboxes for each status (✨ New, 💬 Commented, ✅ Approved, ⛔ Rejected, 🎉 Merged, 📝 Draft)
     - Unchecked statuses are hidden from all tables
     - State persisted in LocalStorage
-    - **Default State**: All statuses are checked by default, including ✨ New
+    - **Default State**: All statuses are checked by default, including ✨ New and 📝 Draft
     - **Dynamic Behavior**:
       - When "Fetch Closed MRs" is disabled: 
         - "Rejected" checkbox is automatically unchecked and disabled (since rejected MRs are not fetched)
         - "Merged" checkbox is automatically unchecked and disabled (merged MRs are not fetched when this option is disabled)
       - When "Fetch Closed MRs" is enabled: All status checkboxes are enabled and can be toggled
+    - **Draft Filter**: 
+      - Checkbox labeled "📝 Draft" shown alongside other status checkboxes
+      - Draft MRs are identified by titles that start with "Draft:" (case-insensitive)
+      - When unchecked: Draft MRs are hidden from all tables
+      - When checked: Draft MRs are shown (subject to other filters)
+      - State persisted in LocalStorage
+      - **Default State**: Checked (show draft MRs by default)
 - **Responsive**: 
   - On mobile: Stack columns or use card layout
   - On desktop: Full table view

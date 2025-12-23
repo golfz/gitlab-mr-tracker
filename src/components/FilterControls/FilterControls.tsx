@@ -4,6 +4,8 @@ interface FilterControlsProps {
   statusFilters: Record<MRStatus, boolean>;
   onStatusFilterChange: (status: MRStatus, visible: boolean) => void;
   fetchClosedMRs: boolean;
+  showDrafts: boolean;
+  onDraftFilterChange: (showDrafts: boolean) => void;
 }
 
 const statusLabels: Record<MRStatus, string> = {
@@ -18,6 +20,8 @@ export function FilterControls({
   statusFilters,
   onStatusFilterChange,
   fetchClosedMRs,
+  showDrafts,
+  onDraftFilterChange,
 }: FilterControlsProps) {
   return (
     <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-4 mb-4">
@@ -51,6 +55,16 @@ export function FilterControls({
               </label>
             );
           })}
+          {/* Draft filter checkbox */}
+          <label className="flex items-center gap-2 px-3 py-1 rounded cursor-pointer hover:bg-gray-50">
+            <input
+              type="checkbox"
+              checked={showDrafts}
+              onChange={(e) => onDraftFilterChange(e.target.checked)}
+              className="w-4 h-4 text-blue-600 rounded focus:ring-blue-500"
+            />
+            <span className="text-sm">📝 Draft</span>
+          </label>
         </div>
       </div>
     </div>

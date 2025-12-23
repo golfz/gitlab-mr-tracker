@@ -4,6 +4,7 @@ const CONFIG_KEY = 'gitlab_mr_config';
 const MR_LIST_KEY = 'gitlab_mr_list';
 const LAST_UPDATED_KEY = 'gitlab_mr_last_updated';
 const STATUS_FILTERS_KEY = 'gitlab_mr_status_filters';
+const DRAFT_FILTER_KEY = 'gitlab_mr_draft_filter';
 const MR_READ_TIMESTAMPS_KEY = 'gitlab_mr_read_timestamps';
 
 export const storage = {
@@ -122,6 +123,27 @@ export const storage = {
       this.saveMRReadTimestamps(timestamps);
     } catch (error) {
       console.error('Failed to update MR read timestamp:', error);
+    }
+  },
+
+  getDraftFilter(): boolean {
+    try {
+      const item = localStorage.getItem(DRAFT_FILTER_KEY);
+      if (item === null) {
+        // Default: show draft MRs
+        return true;
+      }
+      return JSON.parse(item) as boolean;
+    } catch {
+      return true;
+    }
+  },
+
+  saveDraftFilter(showDrafts: boolean): void {
+    try {
+      localStorage.setItem(DRAFT_FILTER_KEY, JSON.stringify(showDrafts));
+    } catch (error) {
+      console.error('Failed to save draft filter:', error);
     }
   },
 };

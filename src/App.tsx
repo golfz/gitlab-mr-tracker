@@ -42,11 +42,17 @@ function App() {
     }
     return filters;
   });
+  const [showDrafts, setShowDrafts] = useState<boolean>(() => storage.getDraftFilter());
 
   // Save status filters to storage
   useEffect(() => {
     storage.saveStatusFilters(statusFilters);
   }, [statusFilters]);
+
+  // Save draft filter to storage
+  useEffect(() => {
+    storage.saveDraftFilter(showDrafts);
+  }, [showDrafts]);
 
   // Update status filters when fetchClosedMRs changes
   useEffect(() => {
@@ -126,9 +132,20 @@ function App() {
     return mrs.filter((mr) => statusFilters[mr.status]);
   };
 
-  const myMRs = filterByStatus(filterByClosedMRs(filterByFetchTime(categorized.my, true), true));
-  const teamMRs = filterByStatus(filterByClosedMRs(filterByFetchTime(categorized.team, true), true));
-  const otherMRs = filterByStatus(filterByClosedMRs(filterByFetchTime(categorized.other, false), false));
+  // Filter by draft (MRs with "Draft:" prefix in title)
+  const filterByDraft = (mrs: typeof categorized.my) => {
+    if (showDrafts) {
+      return mrs; // Show all MRs including drafts
+    }
+    return mrs.filter((mr) => {
+      // Check if title starts with "Draft:" (case-insensitive)
+      return !mr.title.toLowerCase().startsWith('draft:');
+    });
+  };
+
+  const myMRs = filterByDraft(filterByStatus(filterByClosedMRs(filterByFetchTime(categorized.my, true), true)));
+  const teamMRs = filterByDraft(filterByStatus(filterByClosedMRs(filterByFetchTime(categorized.team, true), true)));
+  const otherMRs = filterByDraft(filterByStatus(filterByClosedMRs(filterByFetchTime(categorized.other, false), false)));
 
   const handleConfigSave = (newConfig: typeof config) => {
     saveConfig(newConfig);
@@ -199,6 +216,8 @@ function App() {
           statusFilters={statusFilters}
           onStatusFilterChange={handleStatusFilterChange}
           fetchClosedMRs={config.fetchClosedMRs}
+          showDrafts={showDrafts}
+          onDraftFilterChange={setShowDrafts}
         />
 
         {/* MR Tables */}
